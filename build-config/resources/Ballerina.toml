@@ -1,0 +1,14 @@
+[package]
+org = "ballerinax"
+name = "solace.smf"
+version = "@toml.version@"
+authors = ["Ballerina"]
+keywords = ["service", "client", "messaging", "network", "pubsub"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-solace.smf"
+icon = "icon.png"
+license = ["Apache-2.0"]
+distribution = "2201.12.10"
+
+[platform.java21]
+graalvmCompatible = true
+
