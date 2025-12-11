@@ -65,7 +65,7 @@ modules = [
 ]
 
 [[package]]
-org = "ballerinax"
+org = "xlibb"
 name = "solace"
 version = "0.1.0"
 dependencies = [
@@ -73,6 +73,6 @@ dependencies = [
 	{org = "ballerina", name = "test"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "solace", moduleName = "solace"}
+	{org = "xlibb", packageName = "solace", moduleName = "solace"}
 ]
 

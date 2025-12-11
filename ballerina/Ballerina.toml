@@ -1,10 +1,10 @@
 [package]
-org = "ballerinax"
+org = "xlibb"
 name = "solace"
 version = "0.1.0"
 authors = ["Ballerina"]
 keywords = ["service", "client", "messaging", "network", "pubsub"]
-repository = "https://github.com/ballerina-platform/module-ballerinax-solace"
+repository = "https://github.com/xlibb/module-solace"
 icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.12.10"
