@@ -14,12 +14,5 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/jballerina.java;
-
-function init() {
-    setModule();
-}
-
-function setModule() = @java:Method {
-    'class: "io.ballerina.lib.solace.ModuleUtils"
-} external;
+# Represents a Solace distinct error.
+public type Error distinct error;
