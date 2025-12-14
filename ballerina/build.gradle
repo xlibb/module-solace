@@ -215,5 +215,5 @@ test.dependsOn ":${packageName}-native:build"
 test.dependsOn startSolaceServer
 test.finalizedBy stopSolaceServer
 
-publish.dependsOn build
 publishToMavenLocal.dependsOn build
+publish.dependsOn build
