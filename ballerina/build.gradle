@@ -124,6 +124,11 @@ dependencies {
     externalJars(group: 'org.osgi', name: 'org.osgi.annotation', version: "${osgiAnnotationVersion}") {
         transitive = false
     }
+
+    // implementation 'org.json:json:20231013'
+    externalJars(group: 'org.json', name: 'json', version: '20231013') {
+        transitive = false
+    }
 }
 
 task updateTomlFiles {
