@@ -124,6 +124,10 @@ dependencies {
     externalJars(group: 'org.osgi', name: 'org.osgi.annotation', version: "${osgiAnnotationVersion}") {
         transitive = false
     }
+
+    externalJars(group: 'org.json', name: 'json', version: "${jsonVersion}") {
+        transitive = false
+    }
 }
 
 task updateTomlFiles {
@@ -136,6 +140,7 @@ task updateTomlFiles {
         newBallerinaToml = newBallerinaToml.replace('@servicemix.jzlib.version@', project.servicemixJzlibVersion)
         newBallerinaToml = newBallerinaToml.replace('@osgi.annotation.version@', project.osgiAnnotationVersion)
         newBallerinaToml = newBallerinaToml.replace('@netty.version@', project.nettyVersion)
+        newBallerinaToml = newBallerinaToml.replace('@json.version@', project.jsonVersion)
         ballerinaTomlFile.text = newBallerinaToml
     }
 }

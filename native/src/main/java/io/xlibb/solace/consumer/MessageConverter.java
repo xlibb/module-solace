@@ -18,7 +18,9 @@
 
 package io.xlibb.solace.consumer;
 
+import com.solacesystems.jcsmp.BytesMessage;
 import com.solacesystems.jcsmp.Destination;
+import com.solacesystems.jcsmp.MapMessage;
 import com.solacesystems.jcsmp.SDTMap;
 import com.solacesystems.jcsmp.TextMessage;
 import com.solacesystems.jcsmp.XMLMessage;
@@ -35,6 +37,7 @@ import io.xlibb.solace.ModuleUtils;
 import io.xlibb.solace.common.DestinationConverter;
 import io.xlibb.solace.common.PropertyConverter;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static io.xlibb.solace.common.Constants.NATIVE_MESSAGE;
@@ -200,35 +203,26 @@ public class MessageConverter {
         return null;
     }
 
-    /**
-     * Extracts the binary payload from an XMLMessage. Reads from attachment part instead of content part.
-     */
-    private static byte[] extractPayload(XMLMessage xmlMessage) {
-        // Check if message has attachment (primary payload location)
-        if (xmlMessage.hasAttachment()) {
-            int attachmentLength = xmlMessage.getAttachmentContentLength();
-            if (attachmentLength > 0) {
-                byte[] attachment = new byte[attachmentLength];
-                xmlMessage.readAttachmentBytes(attachment);
-                return attachment;
-            }
-        }
-
-        // Fallback: If no attachment, try reading from content (for backward compatibility)
+    private static byte[] extractPayload(XMLMessage xmlMessage) throws Exception {
         if (xmlMessage instanceof TextMessage textMessage) {
             String text = textMessage.getText();
             if (text != null) {
                 return text.getBytes(StandardCharsets.UTF_8);
             }
-        } else if (xmlMessage.hasContent()) {
-            int contentLength = xmlMessage.getContentLength();
-            if (contentLength > 0) {
-                byte[] content = new byte[contentLength];
-                xmlMessage.readContentBytes(content);
-                return content;
+        } else if (xmlMessage instanceof BytesMessage bytesMessage) {
+            return bytesMessage.getData();
+        } else if (xmlMessage instanceof MapMessage mapMessage) {
+            SDTMap map = mapMessage.getMap();
+            if (map != null && !map.isEmpty()) {
+                String jsonString = PropertyConverter.sdtMapToJson(map);
+                return jsonString.getBytes(StandardCharsets.UTF_8);
             }
+        } else {
+            ByteBuffer buf = xmlMessage.getAttachmentByteBuffer();
+            byte[] content = new byte[buf.remaining()];
+            buf.get(content);
+            return content;
         }
-
         return new byte[0];
     }
 
