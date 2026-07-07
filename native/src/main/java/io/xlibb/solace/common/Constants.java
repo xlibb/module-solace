@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org).
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org).
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -34,5 +34,10 @@ public class Constants {
     public static final String NATIVE_MESSAGE = "native.message";
     public static final String NATIVE_URL = "native.url";
     public static final String NATIVE_DESTINATION = "native.destination";
+
+    // Listener-specific native data keys
+    public static final String NATIVE_RUNTIME = "native.runtime";
+    public static final String NATIVE_SERVICES = "native.services";
+    public static final String NATIVE_STARTED = "native.started";
 
 }
