@@ -22,6 +22,7 @@ import com.solacesystems.jcsmp.JCSMPFactory;
 import com.solacesystems.jcsmp.JCSMPProperties;
 import com.solacesystems.jcsmp.JCSMPSession;
 import com.solacesystems.jcsmp.ProducerFlowProperties;
+import com.solacesystems.jcsmp.SDTMap;
 import com.solacesystems.jcsmp.XMLMessage;
 import com.solacesystems.jcsmp.XMLMessageProducer;
 import com.solacesystems.jcsmp.transaction.TransactedSession;
@@ -38,6 +39,8 @@ import io.xlibb.solace.config.ConfigurationUtils;
 import io.xlibb.solace.config.ProducerConfiguration;
 import io.xlibb.solace.observability.SolaceMetricsUtil;
 import io.xlibb.solace.observability.SolaceTracingUtil;
+
+import java.util.Map;
 
 import static io.xlibb.solace.common.Constants.NATIVE_CLOSED;
 import static io.xlibb.solace.common.Constants.NATIVE_PRODUCER;
@@ -144,6 +147,7 @@ public class ProducerActions {
             }
 
             XMLMessage jcsmpMessage = MessageConverter.toJCSMPMessage(xmlProducer, message);
+            injectTraceContext(env, jcsmpMessage);
 
             if (destinationMap == null || destinationMap.isEmpty()) {
                 return CommonUtils.createError("Destination must be specified");
@@ -171,6 +175,25 @@ public class ProducerActions {
             SolaceMetricsUtil.reportProducerError(producer, destinationName, ERROR_TYPE_PUBLISH);
             return CommonUtils.createError("Failed to send message", e);
         }
+    }
+
+    /**
+     * Injects the current span's W3C traceparent/tracestate into the outbound message's properties, so a consumer
+     * on the other side of the broker can correlate (or, for a service listener, link) its trace with this publish.
+     */
+    private static void injectTraceContext(Environment env, XMLMessage jcsmpMessage) throws Exception {
+        Map<String, String> traceHeaders = SolaceTracingUtil.getTraceContextHeaders(env);
+        if (traceHeaders == null || traceHeaders.isEmpty()) {
+            return;
+        }
+        SDTMap properties = jcsmpMessage.getProperties();
+        if (properties == null) {
+            properties = JCSMPFactory.onlyInstance().createMap();
+        }
+        for (Map.Entry<String, String> entry : traceHeaders.entrySet()) {
+            properties.putString(entry.getKey(), entry.getValue());
+        }
+        jcsmpMessage.setProperties(properties);
     }
 
     /**
