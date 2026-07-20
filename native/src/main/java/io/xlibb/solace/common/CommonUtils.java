@@ -26,7 +26,6 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.xlibb.solace.ModuleUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -92,24 +91,23 @@ public class CommonUtils {
     }
 
     /**
-     * Computes the best-effort byte size of a Ballerina Solace message's payload, for observability metrics.
+     * Computes the byte size of a Ballerina Solace message's payload, for observability metrics.
+     * <p>
+     * The message {@code payload} is typed {@code byte[]}, so its size is exactly the array length. Any other
+     * shape (which the record type does not permit) is reported as 0 rather than estimated.
      *
      * @param message the Ballerina message record
      * @return the payload size in bytes, or 0 if it cannot be determined
      */
-    @SuppressWarnings("unchecked")
     public static int getPayloadSize(BMap<BString, Object> message) {
         if (message == null) {
             return 0;
         }
         Object payload = message.get(PAYLOAD_KEY);
         if (payload instanceof BArray arr) {
+            // byte[] payload: the wire size is exactly the array length.
             return arr.size();
         }
-        if (payload instanceof BString str) {
-            return str.getValue().getBytes(StandardCharsets.UTF_8).length;
-        }
-        // Best-effort only: exact byte-accounting for other payload shapes (record/map/etc.) is not attempted.
         return 0;
     }
 
